@@ -21,6 +21,8 @@ sandbox_activate() {
         echo "Available binaries : $(echo $(ls))"
         cd -
 
+        echo "Edit .envrc to change forwarded ports (current: ${SANDBOX_PORTS:-none})"
+
     else
         echo "Warning: Docker not found. Cannot run container"
     fi
