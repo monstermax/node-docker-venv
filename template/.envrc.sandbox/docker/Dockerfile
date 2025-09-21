@@ -10,11 +10,4 @@ RUN npm config set prefix '/home/node/.local' && \
     echo 'alias ll="ls -la --color"' >> /home/node/.bashrc && \
     echo 'export PATH="/home/node/.local/bin:$PATH"' >> /home/node/.bashrc
 
-#WORKDIR /home/karma/dev
 CMD ["tail", "-f", "/dev/null"]
-
-
-
-# alias node=/home/monstermax/Documents/dockerfiles/nodejs/node.sh
-# alias ts-node=/home/monstermax/Documents/dockerfiles/nodejs/ts-node.sh
-# alias npm=/home/monstermax/Documents/dockerfiles/nodejs/npm.sh

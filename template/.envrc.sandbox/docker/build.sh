@@ -3,11 +3,21 @@
 cd `dirname $0`
 
 
-ENV_DIR=$(realpath ./../..)
-#echo ENV_DIR=$ENV_DIR
-PROJECT_NAME=$(basename $ENV_DIR)
+#VENV_DIR=$(realpath ./../..)
+#VENV_PROJECT=$(basename $VENV_DIR)
+#VENV_CONTAINER=sandbox_${VENV_PROJECT}
+
+if ! hasDocker; then
+    echo "Error Docker not found"
+    exit 1
+fi
+
+if [ "$VENV_CONTAINER" = "" ]; then
+    echo "Error missing VENV_CONTAINER"
+    exit 1
+fi
 
 
 # Build
-#echo $PROJECT_NAME
-docker build -t sandbox_${PROJECT_NAME} .
+docker build -t ${VENV_CONTAINER} .
+

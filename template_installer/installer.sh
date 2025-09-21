@@ -32,6 +32,9 @@ LINE=$(awk "/^$MARK$/{print NR+1; exit 0}" "$0")
 echo "[sandbox] extraction in: $TARGET_DIR"
 tail -n +$LINE "$0" | tar -xz ${TAR_KEEP-} -C "$TARGET_DIR"
 
+cd $TARGET_DIR
+direnv allow
+
 echo "[sandbox] done. (if .envrc present: 'direnv allow')"
 exit 0
 __ARCHIVE_BELOW__

@@ -12,3 +12,4 @@ cd -
 # Build installer
 cat template_installer/installer.sh /tmp/payload.tar.gz > dist/node-docker-venv.sh
 chmod +x dist/node-docker-venv.sh
+rm -f /tmp/payload.tar.gz

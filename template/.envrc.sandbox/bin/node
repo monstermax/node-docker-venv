@@ -1,11 +1,11 @@
 #!/bin/sh
 
 
-SCRIPT_DIR=$(dirname $0)
-ENV_DIR=$(realpath ${SCRIPT_DIR}/../..)
-PROJECT_NAME=$(basename $ENV_DIR)
-IMAGE=sandbox_${PROJECT_NAME}
+if [ "$VENV_CONTAINER" = "" ]; then
+    echo "Error missing VENV_CONTAINER"
+    exit 1
+fi
 
 exec docker exec -it \
   -w "$PWD" \
-  ${IMAGE} node "$@"
+  ${VENV_CONTAINER} node "$@"

@@ -1,27 +1,36 @@
 
+
+# Export VENV_DIR
+export VENV_DIR=$(cd -- "$(dirname -- "${BASH_SOURCE[0]}")/.." &>/dev/null && pwd)
+export VENV_PROJECT=$(basename $VENV_DIR)
+export VENV_CONTAINER=sandbox_${VENV_PROJECT}
+
+
 sandbox_activate() {
     # Check docker installed
     local HAS_DOCKER=$(docker --version >/dev/null 2>/dev/null && echo 1)
 
-    if [ "$HAS_DOCKER" = "1" ]; then
-        local PROJECT_NAME=$(basename $ENV_DIR)
+    if hasDocker; then
+        #local VENV_PROJECT=$(basename $VENV_DIR)
 
         # Check docker status
-        local DOCKER_STATUS=$(docker ps -f name=${PROJECT_NAME} -f status=running --quiet | grep -q . && echo "UP" || echo "DOWN")
+        #local DOCKER_STATUS=$(docker ps -f name=${VENV_CONTAINER} -f status=running --quiet | grep -q . && echo "UP" || echo "DOWN")
 
         # Start container (if not started)
-        if [ "$DOCKER_STATUS" = "DOWN" ]; then
-            $ENV_DIR/.envrc.sandbox/docker/run.sh
-            echo Docker container started
+        if ! isContainerUp "$VENV_CONTAINER"; then
+            $VENV_DIR/.envrc.sandbox/docker/run.sh
+            echo Container $VENV_CONTAINER started
+        else
+            echo Container $VENV_CONTAINER is already up
         fi
 
         # Modify PATH
-        export PATH="$ENV_DIR/.envrc.sandbox/bin:$PATH"
-        cd $ENV_DIR/.envrc.sandbox/bin
+        export PATH="$VENV_DIR/.envrc.sandbox/bin:$PATH"
+        cd $VENV_DIR/.envrc.sandbox/bin
         echo "Available binaries : $(echo $(ls))"
         cd -
 
-        echo "Edit .envrc to change forwarded ports (current: ${SANDBOX_PORTS:-none})"
+        echo "Edit .envrc to change forwarded ports (current: ${VENV_PORTS:-none})"
 
     else
         echo "Warning: Docker not found. Cannot run container"
@@ -29,4 +38,21 @@ sandbox_activate() {
 }
 
 
+# returns 0 if Docker is available, non-zero otherwise
+hasDocker() {
+  command -v docker >/dev/null 2>&1 || return 1
+  docker info >/dev/null 2>&1 || return 1
+  return 0
+}
+
+
+# usage: isContainerUp <name>   # if <name> omitted, uses $VENV_CONTAINER
+# returns 0 if running, non-zero otherwise
+isContainerUp() {
+  docker ps -f "name=${VENV_CONTAINER}" -f "status=running" -q >/dev/null 2>&1
+  return $?
+}
+
+
 sandbox_activate
+
