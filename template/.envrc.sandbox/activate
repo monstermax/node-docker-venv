@@ -1,0 +1,30 @@
+
+sandbox_activate() {
+    # Check docker installed
+    local HAS_DOCKER=$(docker --version >/dev/null 2>/dev/null && echo 1)
+
+    if [ "$HAS_DOCKER" = "1" ]; then
+        local PROJECT_NAME=$(basename $ENV_DIR)
+
+        # Check docker status
+        local DOCKER_STATUS=$(docker ps -f name=${PROJECT_NAME} -f status=running --quiet | grep -q . && echo "UP" || echo "DOWN")
+
+        # Start container (if not started)
+        if [ "$DOCKER_STATUS" = "DOWN" ]; then
+            $ENV_DIR/.envrc.sandbox/docker/run.sh
+            echo Docker container started
+        fi
+
+        # Modify PATH
+        export PATH="$ENV_DIR/.envrc.sandbox/bin:$PATH"
+        cd $ENV_DIR/.envrc.sandbox/bin
+        echo "Available binaries : $(echo $(ls))"
+        cd -
+
+    else
+        echo "Warning: Docker not found. Cannot run container"
+    fi
+}
+
+
+sandbox_activate

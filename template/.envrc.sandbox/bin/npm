@@ -1,0 +1,11 @@
+#!/bin/sh
+
+
+SCRIPT_DIR=$(dirname $0)
+ENV_DIR=$(realpath ${SCRIPT_DIR}/../..)
+PROJECT_NAME=$(basename $ENV_DIR)
+IMAGE=sandbox_${PROJECT_NAME}
+
+exec docker exec -it \
+  -w "$PWD" \
+  ${IMAGE} npm "$@"
