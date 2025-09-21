@@ -21,12 +21,12 @@ A tiny self-extracting installer that bootstraps a Docker-based “venv-like” 
 ### Quick (download & run)
 
 ```bash
-curl -fsSL https://github.com/monstermax/node-docker-venv/raw/refs/head/main/node-docker-venv/node-docker-venv.sh | bash .
+curl -fsSL https://github.com/monstermax/node-docker-venv/raw/refs/head/master/node-docker-venv/dist/node-docker-venv.sh | bash .
 ```
 
 ```bash
 cd /path/to/your-project
-curl -fsSLo node-docker-venv.sh https://github.com/monstermax/node-docker-venv/raw/refs/head/main/node-docker-venv/node-docker-venv.sh
+curl -fsSLo node-docker-venv.sh https://github.com/monstermax/node-docker-venv/raw/refs/head/master/node-docker-venv/dist/node-docker-venv.sh
 chmod +x node-docker-venv.sh
 ./node-docker-venv.sh            # prompts for target dir; default = $PWD
 
