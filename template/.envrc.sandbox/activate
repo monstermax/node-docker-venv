@@ -13,9 +13,6 @@ sandbox_activate() {
     if hasDocker; then
         #local VENV_PROJECT=$(basename $VENV_DIR)
 
-        # Check docker status
-        #local DOCKER_STATUS=$(docker ps -f name=${VENV_CONTAINER} -f status=running --quiet | grep -q . && echo "UP" || echo "DOWN")
-
         # Start container (if not started)
         if ! isContainerUp "$VENV_CONTAINER"; then
             $VENV_DIR/.envrc.sandbox/docker/run.sh
@@ -38,7 +35,6 @@ sandbox_activate() {
 }
 
 
-# returns 0 if Docker is available, non-zero otherwise
 hasDocker() {
   command -v docker >/dev/null 2>&1 || return 1
   docker info >/dev/null 2>&1 || return 1
@@ -46,8 +42,6 @@ hasDocker() {
 }
 
 
-# usage: isContainerUp <name>   # if <name> omitted, uses $VENV_CONTAINER
-# returns 0 if running, non-zero otherwise
 isContainerUp() {
   docker ps -f "name=${VENV_CONTAINER}" -f "status=running" --quiet 2>/dev/null | grep -q .
   return $?
