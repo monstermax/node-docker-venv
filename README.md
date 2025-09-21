@@ -36,7 +36,11 @@ cd /path/to/your/project
 ## Install from dist (Quick but Not recommanded)
 
 ```bash
-curl -fsSL https://github.com/monstermax/node-docker-venv/raw/refs/heads/master/dist/node-docker-venv.sh | bash .
+cd /path/to/your-project
+
+curl -fsSLo /tmp/node-docker-venv.sh https://github.com/monstermax/node-docker-venv/raw/refs/heads/master/dist/node-docker-venv.sh \
+  && bash /tmp/node-docker-venv.sh .
+
 ```
 
 ```bash
