@@ -22,6 +22,7 @@ if [ ! -d "$TARGET_DIR" ]; then
 fi
 
 # Do not overwrite any existing files (GNU tar: --keep-old-files ; BSD tar: -k)
+TAR_KEEP=""
 #TAR_KEEP="--keep-old-files"
 
 # Find the line where the archive starts and then extract
