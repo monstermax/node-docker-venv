@@ -7,9 +7,12 @@ cd template
 
 # Build archive
 tar -czf /tmp/payload.tar.gz .envrc.sandbox .envrc
-cd -
+cd ..
 
 # Build installer
 cat template_installer/installer.sh /tmp/payload.tar.gz > dist/node-docker-venv.sh
 chmod +x dist/node-docker-venv.sh
 rm -f /tmp/payload.tar.gz
+
+
+echo "Script written into $(realpath ./dist/node-docker-venv.sh)"
