@@ -49,7 +49,7 @@ hasDocker() {
 # usage: isContainerUp <name>   # if <name> omitted, uses $VENV_CONTAINER
 # returns 0 if running, non-zero otherwise
 isContainerUp() {
-  docker ps -f "name=${VENV_CONTAINER}" -f "status=running" -q >/dev/null 2>&1
+  docker ps -f "name=${VENV_CONTAINER}" -f "status=running" --quiet 2>/dev/null | grep -q .
   return $?
 }
 
