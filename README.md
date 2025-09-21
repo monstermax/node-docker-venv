@@ -50,22 +50,6 @@ curl -fsSLo /tmp/node-docker-venv.sh https://github.com/monstermax/node-docker-v
   && bash /tmp/node-docker-venv.sh .
 ```
 
-```bash
-cd /path/to/your-project
-
-curl -fsSLo /tmp/node-docker-venv.sh https://github.com/monstermax/node-docker-venv/raw/refs/heads/master/dist/node-docker-venv.sh
-chmod +x /tmp/node-docker-venv.sh
-/tmp/node-docker-venv.sh            # prompts for target dir; default = $PWD
-
-# or non-interactive:
-/tmp/node-docker-venv.sh /path/to/your-project
-```
-
-
-```bash
-direnv allow
-```
-
 
 ## Notes
 
