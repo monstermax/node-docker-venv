@@ -16,9 +16,24 @@ A tiny self-extracting installer that bootstraps a Docker-based “venv-like” 
 * Docker (or Podman, if you adapt your own scripts)
 * [direnv](https://direnv.net) (to auto-load `.envrc`)
 
-## Install
 
-### Quick (download & run)
+## Install from sources (Recommanded)
+
+```bash
+git clone https://github.com/monstermax/node-docker-venv
+cd node-docker-venv
+./build_package.sh
+
+# Then
+cd /path/to/your/project
+/path/to/node-docker-venv/dist/node-docker-venv.sh .
+
+# Or
+/path/to/node-docker-venv/dist/node-docker-venv.sh /path/to/your/project
+```
+
+
+## Install from dist (Quick but Not recommanded)
 
 ```bash
 curl -fsSL https://github.com/monstermax/node-docker-venv/raw/refs/heads/master/dist/node-docker-venv.sh | bash .
