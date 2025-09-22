@@ -2,6 +2,9 @@
 
 set -euo pipefail
 
+# TODO: ajouter argument ENV_PORTS=$2 en parametre de l'installer afin de pré-configurer .envrc => code à ajouter entre "cd $TARGET_DIR" et "direnv allow"
+
+
 # Reading the target directory
 if [ -n "${1:-}" ]; then
   TARGET_DIR="$1"
