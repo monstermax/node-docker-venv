@@ -23,6 +23,21 @@ The Docker container is based on the official Node.js Docker images, with the si
 * [direnv](https://direnv.net) (to auto-load `.envrc`)
 
 
+
+## direnv Install
+
+```bash
+apt install direnv
+```
+
+Add this at the end of ~/.bashrc
+```bash
+# direnv autoload
+eval "$(direnv hook bash)"
+
+```
+
+
 ## Install from sources (Recommanded)
 
 ```bash
