@@ -4,24 +4,24 @@
 
 
 # Standard versions
-# Node 24 => node:24-{trixie,bookworm,bulleye,alpine}
-# Node 22 => node:22-{trixie,bookworm,bulleye,alpine}
-# Node 20 => node:20-{trixie,bookworm,bulleye,alpine}
+# Node 24 => node:24-{trixie,bookworm,bullseye}
+# Node 22 => node:22-{trixie,bookworm,bullseye}
+# Node 20 => node:20-{trixie,bookworm,bullseye}
 
 # Slim versions
-# Node 24 => node:24-{trixie-slim,bookworm-slim,bulleye-slim}
-# Node 22 => node:22-{trixie-slim,bookworm-slim,bulleye-slim}
-# Node 20 => node:20-{trixie-slim,bookworm-slim,bulleye-slim}
+# Node 24 => node:24-{trixie-slim,bookworm-slim,bullseye-slim}
+# Node 22 => node:22-{trixie-slim,bookworm-slim,bullseye-slim}
+# Node 20 => node:20-{trixie-slim,bookworm-slim,bullseye-slim}
 
 # Debian versions
 # Debian 13 = trixie
 # Debian 12 = bookworm
-# Debian 11 = bulleye
+# Debian 11 = bullseye
 
 #ARG BASE_IMAGE=node:24-trixie-slim
 #ARG BASE_IMAGE=node:22-trixie-slim
 #ARG BASE_IMAGE=node:20-trixie-slim
-ARG BASE_IMAGE=node:22-bookworm
+ARG BASE_IMAGE=node:22-trixie-slim
 
 
 FROM $BASE_IMAGE

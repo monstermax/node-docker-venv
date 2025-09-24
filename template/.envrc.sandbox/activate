@@ -1,13 +1,14 @@
 
+DEFAULT_NODE_VERSION=22-alpine
+
 
 # Export VENV_DIR
 export VENV_DIR=$(cd -- "$(dirname -- "${BASH_SOURCE[0]}")/.." &>/dev/null && pwd)
 export VENV_PROJECT=$(basename $VENV_DIR)
 export VENV_CONTAINER=sandbox_${VENV_PROJECT}
 
-export DEFAULT_NODE_VERSION=22-bookworm
-export NODE_VERSION="${VENV_NODE_VERSION:-$DEFAULT_NODE_VERSION}"
-export VENV_IMAGE=${VENV_CONTAINER}:${NODE_VERSION}
+export VENV_NODE_VERSION="${VENV_NODE_VERSION:-$DEFAULT_NODE_VERSION}"
+export VENV_IMAGE=${VENV_CONTAINER}:${VENV_NODE_VERSION}
 
 
 sandbox_activate() {

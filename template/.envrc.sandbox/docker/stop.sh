@@ -12,3 +12,4 @@ fi
 # Stop docker container
 docker stop ${VENV_CONTAINER}
 
+direnv deny

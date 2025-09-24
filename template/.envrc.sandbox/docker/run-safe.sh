@@ -26,7 +26,7 @@ fi
 
 # Ports mapping only allowed when network enabled
 PORT_FLAGS=()
-if [ -n "${VENV_PORTS:-}" ] && [ "$VENV_NET" = true ]; then
+if [ -n "${VENV_PORTS:-}" ] && [ "${VENV_NET:-false}" = true ]; then
   IFS=',' read -ra P <<<"$VENV_PORTS"
   for p in "${P[@]}"; do
     p="${p//[[:space:]]/}"
