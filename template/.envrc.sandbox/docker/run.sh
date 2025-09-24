@@ -42,7 +42,7 @@ GROUP_ID="$(id -g)"
 
 # Resource limits (tunable)
 MEM_LIMIT="${VENV_MEM_LIMIT:-512m}"
-CPU_LIMIT="${VENV_CPU_LIMIT:-0.5}"   # 0.5 CPU by default
+CPU_LIMIT="${VENV_CPU_LIMIT:-1}"   # 1 CPU by default
 PIDS_LIMIT="${VENV_PIDS_LIMIT:-200}"
 
 
