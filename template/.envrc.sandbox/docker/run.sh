@@ -40,10 +40,19 @@ PORT_FLAGS=()
 USER_ID="$(id -u)"
 GROUP_ID="$(id -g)"
 
+
 # Resource limits (tunable)
-MEM_LIMIT="${VENV_MEM_LIMIT:-512m}"
-CPU_LIMIT="${VENV_CPU_LIMIT:-1}"   # 1 CPU by default
-PIDS_LIMIT="${VENV_PIDS_LIMIT:-200}"
+if [ "${VENV_MEM_LIMIT:-}" != "" ]; then
+  FLAG_MEM_LIMIT="--memory ${VENV_MEM_LIMIT}"
+fi
+
+if [ "${VENV_CPU_LIMIT:-}" != "" ]; then
+  FLAG_CPU_LIMIT="--cpus ${VENV_CPU_LIMIT}"
+fi
+
+if [ "${VENV_PIDS_LIMIT:-}" != "" ]; then
+  FLAG_PIDS_LIMIT="--pids-limit ${VENV_PIDS_LIMIT}"
+fi
 
 
 # Network flag
@@ -64,8 +73,9 @@ docker run -d --rm --name "${VENV_CONTAINER}" \
   --user "${USER_ID}:${GROUP_ID}" \
   --cap-drop ALL \
   --security-opt no-new-privileges \
-  --pids-limit "${PIDS_LIMIT}" \
-  --memory "${MEM_LIMIT}" --cpus "${CPU_LIMIT}" \
+  $FLAG_MEM_LIMIT \
+  $FLAG_CPU_LIMIT \
+  $FLAG_PIDS_LIMIT \
   --network "${NETWORK_FLAG}" \
   --mount type=tmpfs,target=/tmp,tmpfs-mode=1777,tmpfs-size=134217728 \
   -v "${VENV_DIR}:${VENV_DIR}" \
