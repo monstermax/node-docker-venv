@@ -1,0 +1,22 @@
+#!/bin/sh
+
+cd `dirname $0`/../..
+
+
+TMPFILE=/tmp/tmp-${RANDOM}.envrc.bak
+
+if [ -f .envrc ]; then
+  cp -a .envrc $TMPFILE
+else
+  rm -f $TMPFILE
+fi
+
+curl -fsSLo /tmp/node-docker-venv.sh https://github.com/monstermax/node-docker-venv/raw/refs/heads/master/dist/node-docker-venv.sh
+
+bash /tmp/node-docker-venv.sh .
+
+
+if [ -f $TMPFILE ]; then
+  cp -a $TMPFILE .envrc
+fi
+

@@ -1,0 +1,26 @@
+#!/bin/sh
+
+cd `dirname $0`
+
+
+# TODO
+
+
+# afficher config (VENV_NODE_VERSION, VENV_MEM_LIMIT, VENV_CPU_LIMIT, VENV_PIDS_LIMIT)
+echo "Configuration :"
+env |grep VENV_
+
+# afficher statut de direnv
+#direnv status
+
+echo
+
+# afficher statut du container docker
+
+if docker container inspect "${VENV_CONTAINER}" >/dev/null 2>&1; then
+  echo "Docker container is UP"
+
+else
+  echo "Docker container is DOWN"
+fi
+
