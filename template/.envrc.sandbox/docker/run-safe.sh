@@ -26,17 +26,15 @@ fi
 
 # Ports mapping only allowed when network enabled
 PORT_FLAGS=()
-if [ -n "${VENV_PORTS:-}" ] && [ "${VENV_NET:-false}" = true ]; then
+if [ -n "${VENV_PORTS:-}" ]; then
   IFS=',' read -ra P <<<"$VENV_PORTS"
+
   for p in "${P[@]}"; do
     p="${p//[[:space:]]/}"
     [ -n "$p" ] && PORT_FLAGS+=(-p "$p:$p")
   done
 fi
 
-
-# Ensure we do not mount sensitive host dirs by mistake:
-# DO NOT mount /, ~, /etc, /var/run/docker.sock, etc.
 
 # Determine user to run inside container (map to current host uid/gid)
 USER_ID="$(id -u)"
@@ -47,13 +45,16 @@ MEM_LIMIT="${VENV_MEM_LIMIT:-512m}"
 CPU_LIMIT="${VENV_CPU_LIMIT:-0.5}"   # 0.5 CPU by default
 PIDS_LIMIT="${VENV_PIDS_LIMIT:-200}"
 
+
 # Network flag
-if [ "${VENV_NET:-false}" = true ]; then
+if [ "${VENV_NET:-true}" = true ]; then
   NETWORK_FLAG="bridge"
   echo "[!] Network enabled (bridge). Be careful."
+
 else
-  NETWORK_FLAG="none"
+  NETWORK_NAME="none"
 fi
+
 
 echo "RUNNING container ${VENV_CONTAINER}"
 

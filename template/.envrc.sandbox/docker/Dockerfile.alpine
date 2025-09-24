@@ -1,0 +1,32 @@
+
+# Docker: https://hub.docker.com/_/node
+# Github: https://github.com/nodejs/docker-node
+
+
+# Standard versions
+# Node 24 => node:24-alpine
+# Node 22 => node:22-alpine
+# Node 20 => node:20-alpine
+
+ARG BASE_IMAGE=node:22-alpine
+
+
+FROM ${BASE_IMAGE}
+
+# Alpine package manager (no ts-node package available)
+RUN apk add --no-cache bash
+
+# Switch to the non-root 'node' user provided by the base image
+USER node
+
+# npm config & shell aliases (keep parity with your Debian variant)
+ENV NPM_CONFIG_PREFIX=/home/node/.local \
+    NPM_CONFIG_CACHE=/home/node/.npm-cache \
+    PATH=/home/node/.local/bin:$PATH
+
+# Install ts-node globally via npm
+RUN npm install -g ts-node && \
+    echo 'alias l="ls -l --color=auto"' >> /home/node/.bashrc && \
+    echo 'alias ll="ls -la --color=auto"' >> /home/node/.bashrc
+
+CMD ["tail", "-f", "/dev/null"]

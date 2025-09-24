@@ -1,11 +1,1 @@
-#!/bin/sh
-
-
-if [ "$VENV_CONTAINER" = "" ]; then
-    echo "Error missing VENV_CONTAINER"
-    exit 1
-fi
-
-exec docker exec -it \
-  -w "$PWD" \
-  ${VENV_CONTAINER} node "$@"
+node-wrapper

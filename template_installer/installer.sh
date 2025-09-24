@@ -4,7 +4,7 @@ set -euo pipefail
 usage() {
   cat <<'EOF'
 Usage:
-  installer.sh [--dir=PATH] [--ports=LIST] [--net] [--node=VERSION]
+  installer.sh [--dir=PATH] [--ports=LIST] [--no-net] [--node=VERSION]
   installer.sh [TARGET_DIR] [PORTS]
 
 Description:
@@ -16,7 +16,7 @@ Options:
   --dir=PATH           Target directory (otherwise you'll be prompted).
   --ports=LIST         Comma-separated ports to expose (e.g. "3000,5173").
                        Sentinel values to skip: "", -, ., none, no, 0
-  --net                Set VENV_NET="true" in .envrc (if present).
+  --no-net             Set VENV_NET="false" in .envrc (if present).
   --node=VERSION       Set VENV_NODE_VERSION (e.g. "22-alpine").
 
 Positionals (compat):
@@ -24,7 +24,8 @@ Positionals (compat):
   PORTS                Ports list if --ports is not provided.
 
 Examples:
-  installer.sh --dir=/projects/app --ports=3000,5173 --net --node=22-alpine
+  installer.sh --dir=/projects/app --ports=3000,5173 --node=22-alpine
+  installer.sh --dir=/projects/app --no-net --node=22-alpine
   installer.sh /projects/app "3000,5173"
   installer.sh --dir /projects/app --ports none
 
@@ -46,14 +47,14 @@ done
 # $2 = ENV_PORTS (positional, kept for compatibility) e.g. "3000,5173"
 RAW_PORTS=""
 RAW_NODE=""
-NET_FLAG=false
+NET_FLAG=true
 
-# Simple named args: --dir=PATH --ports=LIST --net --node=VERSION
+# Simple named args: --dir=PATH --ports=LIST --no-net --node=VERSION
 for arg in "$@"; do
   case "$arg" in
     --dir=*)   TARGET_DIR="${arg#*=}" ;;
     --ports=*) RAW_PORTS="${arg#*=}" ;;
-    --net)     NET_FLAG=true ;;
+    --no-net)  NET_FLAG=false ;;
     --node=*|--node-version=*) RAW_NODE="${arg#*=}" ;;
   esac
 done
@@ -129,13 +130,14 @@ if [ -f .envrc ]; then
   fi
 
   # VENV_NET (flag without value: presence => true; absence => untouched)
-  if [ "$NET_FLAG" = true ]; then
+  if [ "$NET_FLAG" = false ]; then
     if grep -qE '^\s*#?\s*export\s+VENV_NET=' .envrc; then
-      sed -E -i 's/^\s*#?\s*export\s+VENV_NET=.*/export VENV_NET="true"/g' .envrc
+      sed -E -i 's/^\s*#?\s*export\s+VENV_NET=.*/export VENV_NET="false"/g' .envrc
     else
-      printf '\nexport VENV_NET="true"\n' >> .envrc
+      printf '\nexport VENV_NET="false"\n' >> .envrc
     fi
-    echo "[sandbox] configured VENV_NET=true in $TARGET_DIR/.envrc"
+
+    echo "[sandbox] configured VENV_NET=false in $TARGET_DIR/.envrc"
   fi
 
   # VENV_NODE_VERSION (if provided)
