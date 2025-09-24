@@ -9,6 +9,13 @@ if [ "$VENV_CONTAINER" = "" ]; then
 fi
 
 
+BASE_IMAGE="node:${NODE_VERSION}"
+
+
 # Build docker container
-docker build -t ${VENV_CONTAINER} .
+echo "BUILDING image ${VENV_IMAGE} from image ${BASE_IMAGE}"
+
+docker build \
+  --build-arg BASE_IMAGE="${BASE_IMAGE}" \
+  -t "${VENV_IMAGE}" .
 

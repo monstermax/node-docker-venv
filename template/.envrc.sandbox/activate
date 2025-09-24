@@ -5,6 +5,10 @@ export VENV_DIR=$(cd -- "$(dirname -- "${BASH_SOURCE[0]}")/.." &>/dev/null && pw
 export VENV_PROJECT=$(basename $VENV_DIR)
 export VENV_CONTAINER=sandbox_${VENV_PROJECT}
 
+export DEFAULT_NODE_VERSION=22-bookworm
+export NODE_VERSION="${VENV_NODE_VERSION:-$DEFAULT_NODE_VERSION}"
+export VENV_IMAGE=${VENV_CONTAINER}:${NODE_VERSION}
+
 
 sandbox_activate() {
     # Check docker installed
@@ -15,7 +19,7 @@ sandbox_activate() {
 
         # Start container (if not started)
         if ! isContainerUp "$VENV_CONTAINER"; then
-            $VENV_DIR/.envrc.sandbox/docker/run.sh
+            $VENV_DIR/.envrc.sandbox/docker/run-safe.sh
             echo Container $VENV_CONTAINER started
         else
             echo Container $VENV_CONTAINER is already up

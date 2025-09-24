@@ -3,14 +3,24 @@
 cd `dirname $0`
 
 
-if [ "$VENV_CONTAINER" = "" ]; then
-    echo "Error missing VENV_CONTAINER"
-    exit 1
+if [ -z "${VENV_IMAGE:-}" ]; then
+  echo "Error: missing VENV_IMAGE" >&2
+  exit 1
+fi
+
+if [ -z "${VENV_CONTAINER:-}" ]; then
+  echo "Error: missing VENV_CONTAINER" >&2
+  exit 1
+fi
+
+if [ -z "${VENV_DIR:-}" ]; then
+  echo "Error: missing VENV_DIR (project dir)" >&2
+  exit 1
 fi
 
 
-# If container does not exist, build it (by calling ./build.sh)
-if ! docker image inspect "${VENV_CONTAINER}" >/dev/null 2>&1; then
+# If image does not exist, build it (by calling ./build.sh)
+if ! docker image inspect "${VENV_IMAGE}" >/dev/null 2>&1; then
   ./build.sh
   echo "Docker image built"
 fi
@@ -28,9 +38,11 @@ fi
 
 
 # Run docker container
+echo "RUNNING container ${VENV_CONTAINER}"
+
 docker run -d --rm --name ${VENV_CONTAINER} \
   -v ${VENV_DIR}:${VENV_DIR} \
   "${PORT_FLAGS[@]}" \
-  ${VENV_CONTAINER}
+  "${VENV_IMAGE}"
 
 
