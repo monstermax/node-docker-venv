@@ -20,7 +20,7 @@ sandbox_activate() {
 
         # Start container (if not started)
         if ! isContainerUp "$VENV_CONTAINER"; then
-            $VENV_DIR/.envrc.sandbox/docker/run-safe.sh
+            $VENV_DIR/.envrc.sandbox/docker/run.sh
 
             echo Container $VENV_CONTAINER started
         else
