@@ -73,9 +73,9 @@ docker run -d --rm --name "${VENV_CONTAINER}" \
   --user "${USER_ID}:${GROUP_ID}" \
   --cap-drop ALL \
   --security-opt no-new-privileges \
-  $FLAG_MEM_LIMIT \
-  $FLAG_CPU_LIMIT \
-  $FLAG_PIDS_LIMIT \
+  ${FLAG_MEM_LIMIT:-} \
+  ${FLAG_CPU_LIMIT:-} \
+  ${FLAG_PIDS_LIMIT:-} \
   --network "${NETWORK_FLAG}" \
   --mount type=tmpfs,target=/tmp,tmpfs-mode=1777,tmpfs-size=134217728 \
   -v "${VENV_DIR}:${VENV_DIR}" \
