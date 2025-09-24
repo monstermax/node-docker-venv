@@ -76,20 +76,15 @@ curl -fsSLo /tmp/node-docker-venv.sh https://github.com/monstermax/node-docker-v
 
 Once installed and `direnv` is allowed in the project folder:
 
-* configure everything in `.envrc` (example: `export VENV_PORTS="3000,5173"`),
+* configure everything in `.envrc`,
 * open a new shell in the project directory,
 * use your regular commands (`node`, `npm`, `npx`, etc.)—they’ll run inside the sandbox if your wrappers/runner do so.
 
 
 ## Configuration
 
-Put all project-specific settings in `.envrc` (kept in the repo). Typical examples:
+Put all project-specific settings in `.envrc` (kept in the repo).
 
-```bash
-# .envrc
-export VENV_PORTS="3000,5173"   # ports are mapped 1:1 (3000->3000, 5173->5173)
-
-# …
 ```
 
 

@@ -26,14 +26,14 @@ fi
 
 # Ports mapping only allowed when network enabled
 PORT_FLAGS=()
-if [ -n "${VENV_PORTS:-}" ]; then
-  IFS=',' read -ra P <<<"$VENV_PORTS"
-
-  for p in "${P[@]}"; do
-    p="${p//[[:space:]]/}"
-    [ -n "$p" ] && PORT_FLAGS+=(-p "$p:$p")
-  done
-fi
+#if [ -n "${VENV_PORTS:-}" ]; then
+#  IFS=',' read -ra P <<<"$VENV_PORTS"
+#
+#  for p in "${P[@]}"; do
+#    p="${p//[[:space:]]/}"
+#    [ -n "$p" ] && PORT_FLAGS+=(-p "$p:$p")
+#  done
+#fi
 
 
 # Determine user to run inside container (map to current host uid/gid)
@@ -47,13 +47,15 @@ PIDS_LIMIT="${VENV_PIDS_LIMIT:-200}"
 
 
 # Network flag
-if [ "${VENV_NET:-true}" = true ]; then
-  NETWORK_FLAG="bridge"
-  echo "[!] Network enabled (bridge). Be careful."
-
-else
-  NETWORK_NAME="none"
-fi
+NETWORK_FLAG="host"
+#if [ "${VENV_NET:-true}" = true ]; then
+#  #NETWORK_FLAG="bridge"
+#  NETWORK_FLAG="host"
+#  echo "[!] Network enabled (${NETWORK_FLAG}). Be careful."
+#
+#else
+#  NETWORK_NAME="none"
+#fi
 
 
 echo "RUNNING container ${VENV_CONTAINER}"

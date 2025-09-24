@@ -14,20 +14,15 @@ Description:
 Options:
   --help               Show this help and exit.
   --dir=PATH           Target directory (otherwise you'll be prompted).
-  --ports=LIST         Comma-separated ports to expose (e.g. "3000,5173").
-                       Sentinel values to skip: "", -, ., none, no, 0
-  --no-net             Set VENV_NET="false" in .envrc (if present).
   --node=VERSION       Set VENV_NODE_VERSION (e.g. "22-alpine").
 
 Positionals (compat):
   TARGET_DIR           Target directory if --dir is not provided.
-  PORTS                Ports list if --ports is not provided.
 
 Examples:
-  installer.sh --dir=/projects/app --ports=3000,5173 --node=22-alpine
-  installer.sh --dir=/projects/app --no-net --node=22-alpine
-  installer.sh /projects/app "3000,5173"
-  installer.sh --dir /projects/app --ports none
+  installer.sh .
+  installer.sh /projects/app --node=22-alpine
+  installer.sh --dir=/projects/app --node=22-alpine
 
 Node Versions (Format: "${NODE_VERSION}-${DISTRIB}") :
   Node  version: 20 22 24
@@ -44,20 +39,20 @@ for arg in "$@"; do
 done
 
 # $1 = TARGET_DIR (positional, kept for compatibility)
-# $2 = ENV_PORTS (positional, kept for compatibility) e.g. "3000,5173"
-RAW_PORTS=""
 RAW_NODE=""
-NET_FLAG=true
+#RAW_PORTS=""
+#NET_FLAG=true
 
 # Simple named args: --dir=PATH --ports=LIST --no-net --node=VERSION
 for arg in "$@"; do
   case "$arg" in
     --dir=*)   TARGET_DIR="${arg#*=}" ;;
-    --ports=*) RAW_PORTS="${arg#*=}" ;;
-    --no-net)  NET_FLAG=false ;;
     --node=*|--node-version=*) RAW_NODE="${arg#*=}" ;;
+#    --ports=*) RAW_PORTS="${arg#*=}" ;;
+#    --no-net)  NET_FLAG=false ;;
   esac
 done
+
 
 # Read target directory (if --dir=... not provided, fallback to positional/prompt)
 if [ -z "${TARGET_DIR:-}" ]; then
@@ -80,29 +75,31 @@ if [ ! -d "$TARGET_DIR" ]; then
   exit 1
 fi
 
+
 # Ports handling (fallback to positional/prompt if --ports not provided)
-ASK_PORTS=false
-if [ -z "${RAW_PORTS}" ]; then
-  if [ $# -ge 2 ] && [[ "${2:-}" != --* ]]; then
-    RAW_PORTS="$2"
-  else
-    ASK_PORTS=true
-  fi
-fi
+#ASK_PORTS=false
+#if [ -z "${RAW_PORTS}" ]; then
+#  if [ $# -ge 2 ] && [[ "${2:-}" != --* ]]; then
+#    RAW_PORTS="$2"
+#  else
+#    ASK_PORTS=true
+#  fi
+#fi
 
-if [ -n "${RAW_PORTS}" ]; then
-  _low="${RAW_PORTS,,}"
-  case "$_low" in
-    ""|"-"|"."|"none"|"no"|"0")
-      RAW_PORTS=""
-      ASK_PORTS=false
-      ;;
-  esac
-fi
+#if [ -n "${RAW_PORTS}" ]; then
+#  _low="${RAW_PORTS,,}"
+#  case "$_low" in
+#    ""|"-"|"."|"none"|"no"|"0")
+#      RAW_PORTS=""
+#      ASK_PORTS=false
+#      ;;
+#  esac
+#fi
 
-if [ "$ASK_PORTS" = true ] && [ -z "${RAW_PORTS}" ]; then
-  read -r -p "Ports to expose (comma-separated, empty to skip): " RAW_PORTS
-fi
+#if [ "$ASK_PORTS" = true ] && [ -z "${RAW_PORTS}" ]; then
+#  read -r -p "Ports to expose (comma-separated, empty to skip): " RAW_PORTS
+#fi
+
 
 # Extraction
 TAR_KEEP=""
@@ -117,28 +114,28 @@ cd "$TARGET_DIR"
 # Update .envrc only if present
 if [ -f .envrc ]; then
   # VENV_PORTS
-  if [ -n "${RAW_PORTS}" ]; then
-    ENV_PORTS_CLEAN="$(printf '%s' "$RAW_PORTS" | tr -d ' ' | tr -cd '0-9,')"
-    if [ -n "$ENV_PORTS_CLEAN" ]; then
-      if grep -qE '^\s*#?\s*export\s+VENV_PORTS=' .envrc; then
-        sed -E -i 's/^\s*#?\s*export\s+VENV_PORTS=.*/export VENV_PORTS="'"${ENV_PORTS_CLEAN}"'"/g' .envrc
-      else
-        printf '\nexport VENV_PORTS="%s"\n' "$ENV_PORTS_CLEAN" >> .envrc
-      fi
-      echo "[sandbox] configured VENV_PORTS=${ENV_PORTS_CLEAN} in $TARGET_DIR/.envrc"
-    fi
-  fi
+  #if [ -n "${RAW_PORTS}" ]; then
+  #  ENV_PORTS_CLEAN="$(printf '%s' "$RAW_PORTS" | tr -d ' ' | tr -cd '0-9,')"
+  #  if [ -n "$ENV_PORTS_CLEAN" ]; then
+  #    if grep -qE '^\s*#?\s*export\s+VENV_PORTS=' .envrc; then
+  #      sed -E -i 's/^\s*#?\s*export\s+VENV_PORTS=.*/export VENV_PORTS="'"${ENV_PORTS_CLEAN}"'"/g' .envrc
+  #    else
+  #      printf '\nexport VENV_PORTS="%s"\n' "$ENV_PORTS_CLEAN" >> .envrc
+  #    fi
+  #    echo "[sandbox] configured VENV_PORTS=${ENV_PORTS_CLEAN} in $TARGET_DIR/.envrc"
+  #  fi
+  #fi
 
   # VENV_NET (flag without value: presence => true; absence => untouched)
-  if [ "$NET_FLAG" = false ]; then
-    if grep -qE '^\s*#?\s*export\s+VENV_NET=' .envrc; then
-      sed -E -i 's/^\s*#?\s*export\s+VENV_NET=.*/export VENV_NET="false"/g' .envrc
-    else
-      printf '\nexport VENV_NET="false"\n' >> .envrc
-    fi
-
-    echo "[sandbox] configured VENV_NET=false in $TARGET_DIR/.envrc"
-  fi
+  #if [ "$NET_FLAG" = false ]; then
+  #  if grep -qE '^\s*#?\s*export\s+VENV_NET=' .envrc; then
+  #    sed -E -i 's/^\s*#?\s*export\s+VENV_NET=.*/export VENV_NET="false"/g' .envrc
+  #  else
+  #    printf '\nexport VENV_NET="false"\n' >> .envrc
+  #  fi
+  #
+  #  echo "[sandbox] configured VENV_NET=false in $TARGET_DIR/.envrc"
+  #fi
 
   # VENV_NODE_VERSION (if provided)
   if [ -n "${RAW_NODE}" ]; then
