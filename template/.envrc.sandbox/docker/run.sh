@@ -65,9 +65,7 @@ docker run -d --rm --name "${VENV_CONTAINER}" \
   --pids-limit "${PIDS_LIMIT}" \
   --memory "${MEM_LIMIT}" --cpus "${CPU_LIMIT}" \
   --network "${NETWORK_FLAG}" \
-  --read-only \
   --mount type=tmpfs,target=/tmp,tmpfs-mode=1777,tmpfs-size=134217728 \
-  --tmpfs /home/node:rw,nosuid,noexec,uid=${USER_ID},gid=${GROUP_ID},mode=0755,size=10m \
   -v "${VENV_DIR}:${VENV_DIR}" \
   -w "${VENV_DIR}" \
   "${PORT_FLAGS[@]}" \

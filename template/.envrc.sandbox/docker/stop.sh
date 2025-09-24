@@ -10,6 +10,10 @@ fi
 
 
 # Stop docker container
-docker stop ${VENV_CONTAINER}
+if docker container inspect "${VENV_CONTAINER}" >/dev/null 2>&1; then
+  docker stop ${VENV_CONTAINER}
+  echo "Docker container stopped"
+fi
+
 
 #direnv deny

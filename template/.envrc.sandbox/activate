@@ -1,5 +1,8 @@
 
 DEFAULT_NODE_VERSION=22-alpine
+DEFAULT_MEM_LIMIT=512m
+DEFAULT_CPU_LIMIT=0.5
+DEFAULT_PIDS_LIMIT=200
 
 
 # Export VENV_DIR
@@ -9,6 +12,10 @@ export VENV_CONTAINER=sandbox_${VENV_PROJECT}
 
 export VENV_NODE_VERSION="${VENV_NODE_VERSION:-$DEFAULT_NODE_VERSION}"
 export VENV_IMAGE=${VENV_CONTAINER}:${VENV_NODE_VERSION}
+
+export VENV_MEM_LIMIT=${VENV_MEM_LIMIT:-$DEFAULT_MEM_LIMIT}
+export VENV_CPU_LIMIT=${VENV_CPU_LIMIT:-$DEFAULT_CPU_LIMIT}
+export VENV_PIDS_LIMIT=${VENV_PIDS_LIMIT:-$DEFAULT_PIDS_LIMIT}
 
 
 sandbox_activate() {
@@ -49,7 +56,8 @@ hasDocker() {
 
 
 isContainerUp() {
-  docker ps -f "name=${VENV_CONTAINER}" -f "status=running" --quiet 2>/dev/null | grep -q .
+  #docker ps -f "name=${VENV_CONTAINER}" -f "status=running" --quiet 2>/dev/null | grep -q .
+  docker container inspect "${VENV_CONTAINER}" >/dev/null 2>&1
   return $?
 }
 
