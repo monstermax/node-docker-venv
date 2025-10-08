@@ -1,0 +1,119 @@
+
+
+# Default node version
+DEFAULT_NODE_VERSION=22-alpine
+
+VENV_LIB_DIR=$(dirname $(dirname $BASH_SOURCE))
+
+
+
+exitVerbose() {
+    local RC=$1
+    local MESSAGE="$2"
+
+    if [ ! -z "$MESSAGE" ]; then
+        echo $MESSAGE
+    fi
+
+    exit $RC
+}
+
+
+exportEnvVariables() {
+    HASH=$(echo $VENV_DIR |sha1sum |cut -c1-4)
+
+    # Export ENV variables
+    export VENV_DIR
+    export VENV_LIB_DIR
+
+    export VENV_PROJECT=$(basename $VENV_DIR)
+    export VENV_CONTAINER=sandbox_${VENV_PROJECT}_${HASH}
+
+    export VENV_NODE_VERSION="${VENV_NODE_VERSION:-$DEFAULT_NODE_VERSION}"
+    export VENV_IMAGE=${VENV_CONTAINER}:${VENV_NODE_VERSION}
+
+    return 0
+}
+
+
+activateDockerContainer() {
+    # Check docker installed
+    local HAS_DOCKER=$(docker --version >/dev/null 2>/dev/null && echo 1)
+
+    if hasDocker; then
+
+        # Start container (if not started)
+        if ! isContainerUp "$VENV_CONTAINER"; then
+            ${VENV_LIB_DIR}/docker/run.sh
+
+            echo Container $VENV_CONTAINER started
+        else
+            echo Container $VENV_CONTAINER is already up
+        fi
+
+    else
+        echo "Warning: Docker not found. Cannot run container"
+    fi
+}
+
+
+hasDocker() {
+  command -v docker >/dev/null 2>&1 || return 1
+  docker info >/dev/null 2>&1 || return 1
+  return 0
+}
+
+
+isContainerUp() {
+  #docker ps -f "name=${VENV_CONTAINER}" -f "status=running" --quiet 2>/dev/null | grep -q .
+  docker container inspect "${VENV_CONTAINER}" >/dev/null 2>&1
+  return $?
+}
+
+
+exportPath() {
+    export PATH="${VENV_LIB_DIR}/bin:$PATH"
+}
+
+
+showAvailableBinaries() {
+    cd ${VENV_LIB_DIR}/bin
+    echo "Available binaries : $(echo $(ls))"
+    cd -
+}
+
+
+
+activateVenv() {
+    test -z "$VENV_LIB_DIR" && exitVerbose 2 "Missing VENV_LIB_DIR"
+    test ! -d "$VENV_LIB_DIR" && exitVerbose 3 "Invalid VENV_LIB_DIR = ${VENV_LIB_DIR}"
+
+    test -z "$VENV_DIR" && exitVerbose 4 "Missing VENV_DIR"
+    test ! -d "$VENV_DIR" && exitVerbose 5 "Invalid VENV_DIR = ${VENV_DIR}"
+
+
+    # Export env variables
+    exportEnvVariables $VENV_DIR || exitVerbose 10 "error while export ENV variables"
+
+    # Activate docker container
+    activateDockerContainer || exitVerbose 20 "error while activate docker container"
+
+
+    # Modify PATH
+    exportPath || exitVerbose 30 "error while export PATH variable"
+
+    # Show available binaries
+    showAvailableBinaries || exitVerbose 40 "error while showing available binaries"
+
+    echo "Venv '${VENV_DIR}' loaded. Edit .envrc to change config"
+}
+
+
+
+echo "[DEBUG] VENV_LIB_DIR = $VENV_LIB_DIR"
+echo "[DEBUG] VENV_DIR = $VENV_DIR"
+
+
+activateVenv
+
+

@@ -1,6 +1,8 @@
 #!/usr/bin/env bash
+
 set -euo pipefail
 cd "$(dirname "$0")"
+
 
 if [ -z "${VENV_IMAGE:-}" ]; then
   echo "Error: missing VENV_IMAGE" >&2

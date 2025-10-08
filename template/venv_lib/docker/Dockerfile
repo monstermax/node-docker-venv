@@ -26,7 +26,7 @@ ARG BASE_IMAGE=node:22-trixie-slim
 
 FROM $BASE_IMAGE
 
-RUN apt-get update && apt-get install -y ts-node && apt-get clean
+RUN apt-get update && apt-get install -y node-typescript ts-node && apt-get clean
 
 USER node
 

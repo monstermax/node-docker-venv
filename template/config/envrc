@@ -1,0 +1,22 @@
+
+# Node version (default = 22-alpine)
+
+# (Format: "${NODE_VERSION}-${DISTRIB}")
+# - Node versions: 20 22 24
+# - Linux distrib: trixie trixie-slim bookworm bookworm-slim bullseye bullseye-slim alpine 
+
+#export VENV_NODE_VERSION="22-bullseye" # Debian 11 / Node 22
+#export VENV_NODE_VERSION="22-alpine" # Alpine Linux / Node 22
+
+
+# Allowed resources (default = unlimited)
+#export VENV_MEM_LIMIT=512m
+#export VENV_CPU_LIMIT=$(($(nproc) * 3 / 4))
+#export VENV_PIDS_LIMIT=200
+
+
+
+# Activate the venv
+export VENV_DIR=$(realpath $(dirname $BASH_SOURCE))
+source $HOME/.node-docker-venv/venv_lib/scripts/venv-activate
+
