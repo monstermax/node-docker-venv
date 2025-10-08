@@ -10,7 +10,7 @@ tar -czf /tmp/payload-ndv.tar.gz bin config venv_lib
 cd ..
 
 # Build installer
-cat template_installer/installer.sh /tmp/payload-ndv.tar.gz > dist/node-venv-installer.sh
+cat installer_lib/installer.sh /tmp/payload-ndv.tar.gz > dist/node-venv-installer.sh
 chmod +x dist/node-venv-installer.sh
 rm -f /tmp/payload-ndv.tar.gz
 
