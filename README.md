@@ -40,29 +40,36 @@ eval "$(direnv hook bash)"
 ## Install from sources (Recommanded)
 
 ```bash
+cd /tmp
+
 git clone https://github.com/monstermax/node-docker-venv
 cd node-docker-venv
+
+# This creates `dist/node-venv-installer.sh` by concatenating the installer stub with a tar.gz payload from the `template/` directory.
 ./build_installer.sh
 
-# Then
-cd /path/to/your/project
-/path/to/node-docker-venv/dist/node-venv-installer.sh .
-
-# Or
-/path/to/node-docker-venv/dist/node-venv-installer.sh /path/to/your/project
+# Then, install it into $HOME/.node-docker-venv
+./dist/node-venv-installer.sh .
 ```
 
-This creates `dist/node-venv-installer.sh` by concatenating the installer stub with a tar.gz payload from the `template/` directory.
 
 
 ## Install from dist (Quick but Not recommanded)
 
 ```bash
-cd /path/to/your-project
-
 curl -fsSLo /tmp/node-venv-installer.sh https://github.com/monstermax/node-docker-venv/raw/refs/heads/master/dist/node-venv-installer.sh \
   && bash /tmp/node-venv-installer.sh .
 ```
+
+
+## Activate a new venv
+
+```bash
+cd /path/to/your-project
+
+node-venv
+```
+
 
 
 ## Notes
