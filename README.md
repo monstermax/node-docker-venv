@@ -34,6 +34,9 @@ Add this at the end of ~/.bashrc
 # direnv autoload
 eval "$(direnv hook bash)"
 
+# update PATH
+PATH=$PATH:$HOME/.local/bin
+
 ```
 
 
@@ -49,7 +52,7 @@ cd node-docker-venv
 ./build_installer.sh
 
 # Then, install it into $HOME/.node-docker-venv
-./dist/node-venv-installer.sh .
+./dist/node-venv-installer.sh
 ```
 
 
@@ -57,8 +60,8 @@ cd node-docker-venv
 ## Install from dist (Quick but Not recommanded)
 
 ```bash
-curl -fsSLo /tmp/node-venv-installer.sh https://github.com/monstermax/node-docker-venv/raw/refs/heads/master/dist/node-venv-installer.sh \
-  && bash /tmp/node-venv-installer.sh .
+wget https://github.com/monstermax/node-docker-venv/raw/refs/heads/master/dist/node-venv-installer.sh
+bash node-venv-installer.sh
 ```
 
 
