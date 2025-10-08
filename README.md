@@ -6,13 +6,12 @@ A tiny self-extracting installer that bootstraps a Docker-based “venv-like” 
 ## What it installs
 
 * `.envrc` (project entrypoint; enable with `direnv allow`)
-* `.envrc.sandbox` (helper sourced by `.envrc`)
 
-> The release artifact is a single shell script: `node-docker-venv.sh`. Your build step creates it from the `template/` payload.&#x20;
+> The release artifact is a single shell script: `node-venv-installer.sh`. Your build step creates it from the `template/` payload.&#x20;
 
 ## How does it work?
-1. The .envrc.sandbox/bin folder is added to the $PATH
-2. The .envrc.sandbox/bin folder contains scripts that associate the main Node executables with a Docker container (node, npm, npx, ts-node).
+1. The $HOME/.node-docker-venv/venv_lib/bin folder is added to the $PATH
+2. The $HOME/.node-docker-venv/venv_lib/bin folder contains scripts that associate the main Node executables with a Docker container (node, npm, npx, ts-node).
 
 The Docker container is based on the official Node.js Docker images, with the simple addition of "ts-node" for native TypeScript support.
 
@@ -43,17 +42,17 @@ eval "$(direnv hook bash)"
 ```bash
 git clone https://github.com/monstermax/node-docker-venv
 cd node-docker-venv
-./build_package.sh
+./build_installer.sh
 
 # Then
 cd /path/to/your/project
-/path/to/node-docker-venv/dist/node-docker-venv.sh .
+/path/to/node-docker-venv/dist/node-venv-installer.sh .
 
 # Or
-/path/to/node-docker-venv/dist/node-docker-venv.sh /path/to/your/project
+/path/to/node-docker-venv/dist/node-venv-installer.sh /path/to/your/project
 ```
 
-This creates `dist/node-docker-venv.sh` by concatenating the installer stub with a tar.gz payload from the `template/` directory (currently bundling `.envrc.sandbox` and `.envrc`).
+This creates `dist/node-venv-installer.sh` by concatenating the installer stub with a tar.gz payload from the `template/` directory.
 
 
 ## Install from dist (Quick but Not recommanded)
@@ -61,8 +60,8 @@ This creates `dist/node-docker-venv.sh` by concatenating the installer stub with
 ```bash
 cd /path/to/your-project
 
-curl -fsSLo /tmp/node-docker-venv.sh https://github.com/monstermax/node-docker-venv/raw/refs/heads/master/dist/node-docker-venv.sh \
-  && bash /tmp/node-docker-venv.sh .
+curl -fsSLo /tmp/node-venv-installer.sh https://github.com/monstermax/node-docker-venv/raw/refs/heads/master/dist/node-venv-installer.sh \
+  && bash /tmp/node-venv-installer.sh .
 ```
 
 
@@ -93,6 +92,13 @@ Put all project-specific settings in `.envrc` (kept in the repo).
 Re-run a newer installer.
 
 
-## Uninstall
+## Uninstall from your project
 
-Remove the files/folders you added to the repo (at minimum `.envrc` and `.envrc.sandbox`). If you committed them, remove from VCS too.
+Remove the `.envrc`. If you committed them, remove from VCS too.
+
+
+## Uninstall globally
+
+Remove the files/folders into `$HOME/.node-docker-venv`
+
+
