@@ -8,8 +8,19 @@ if [ "$VENV_CONTAINER" = "" ]; then
     exit 1
 fi
 
+if [ "$VENV_IMAGE" = "" ]; then
+    echo "Error missing VENV_IMAGE"
+    exit 1
+fi
+
 
 ./stop.sh
+
+if [[ " ${@} " =~ " --rebuild " ]]; then
+    # Destroy image
+    docker rm -f ${VENV_CONTAINER}
+    docker rmi ${VENV_IMAGE}
+fi
 
 ./run.sh
 

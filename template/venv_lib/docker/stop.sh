@@ -15,5 +15,3 @@ if docker container inspect "${VENV_CONTAINER}" >/dev/null 2>&1; then
   echo "Docker container stopped"
 fi
 
-
-#direnv deny
