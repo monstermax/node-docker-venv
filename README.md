@@ -112,3 +112,15 @@ Remove the `.envrc`. If you committed them, remove from VCS too.
 Remove the files/folders into `$HOME/.node-docker-venv`
 
 
+
+## Claude code fix
+
+```
+#!/bin/bash
+
+export VENV_CONTAINER=venv_paradex_bot_01_c1a7
+
+$HOME/.node-docker-venv/venv_lib/bin/claude "$@"
+
+# Save this into /tmp/claude
+```

@@ -37,8 +37,7 @@ ENV NPM_CONFIG_PREFIX=/home/node/.local \
     PATH=/home/node/.local/bin:$PATH
 
 
-RUN npm install -g @anthropic-ai/claude-code && \
-    echo 'alias l="ls -l --color=auto"' >> /home/node/.bashrc && \
+RUN echo 'alias l="ls -l --color=auto"' >> /home/node/.bashrc && \
     echo 'alias ll="ls -la --color=auto"' >> /home/node/.bashrc
 
 

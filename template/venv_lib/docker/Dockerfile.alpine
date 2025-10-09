@@ -30,7 +30,8 @@ ENV NPM_CONFIG_PREFIX=/home/node/.local \
 
 
 # Install ts-node globally via npm
-RUN npm install -g typescript ts-node @anthropic-ai/claude-code && \
+RUN npm install -g typescript ts-node && \
+    npm install -g -D @types/node && \
     echo 'alias l="ls -l --color=auto"' >> /home/node/.bashrc && \
     echo 'alias ll="ls -la --color=auto"' >> /home/node/.bashrc
 
