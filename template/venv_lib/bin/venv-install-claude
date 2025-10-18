@@ -1,0 +1,55 @@
+#!/bin/sh
+
+cd `dirname $0`
+
+
+
+if [ -z "$VENV_DIR" ]; then
+  echo "Error: missing VENV_DIR"
+  exit 1
+fi
+
+if [ ! -d "$VENV_DIR" ]; then
+  echo "Error: invalid VENV_DIR ${VENV_DIR}"
+  exit 1
+fi
+
+if [ -z "$VENV_CONTAINER" ]; then
+  echo "Error: missing VENV_CONTAINER"
+  exit 1
+fi
+
+
+cd ${VENV_DIR}
+
+npm install -g @anthropic-ai/claude-code
+
+mkdir -p ${VENV_DIR}/.envrc.bin
+
+echo "" > ${VENV_DIR}/.envrc.bin/claude >>>_EOF
+#!/bin/bash
+
+VENV_CONTAINER=${VENV_CONTAINER}
+EXEC_NAME=claude
+
+exec docker exec -ti \
+  -w "\$PWD" \
+  \${VENV_CONTAINER} \${EXEC_NAME} "\$@"
+
+_EOF
+
+
+
+echo "" > ${VENV_DIR}/.envrc.bin/claude-non-interactive >>>_EOF
+#!/bin/bash
+
+VENV_CONTAINER=${VENV_CONTAINER}
+EXEC_NAME=claude
+
+exec docker exec -i \
+  -w "\$PWD" \
+  \${VENV_CONTAINER} \${EXEC_NAME} "\$@"
+
+_EOF
+
+
