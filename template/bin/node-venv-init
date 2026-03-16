@@ -19,7 +19,17 @@ dMP dMP  VMMMP" dMMMMP" dMMMMMP         dMMMMP"  VMMMP"  VMMMP" dMP dMP dMMMMMP 
 '
 
 
-echo "Creating venv into ${PROJECT_DIR}" 
+# Project name
+VENV_PROJECT=$(basename $PROJECT_DIR)
+echo "Project name ? (default: \"${VENV_PROJECT}\")"
+read VENV_PROJECT_2
+
+if [ "$VENV_PROJECT_2" != "" ]; then
+    VENV_PROJECT="${VENV_PROJECT_2}"
+fi
+
+
+echo "Creating venv \"${VENV_PROJECT}\" into ${PROJECT_DIR}" 
 echo "[Press Enter to continue]"
 read
 
@@ -27,8 +37,24 @@ read
 cp -a $HOME/.node-docker-venv/config/envrc "${PROJECT_DIR}/.envrc"
 
 
+# Add VENV_PROJECT to the .envrc
+
+TMP_FILE=$(mktemp)
+(
+    grep -v "source .*/venv-activate" .envrc
+    #echo "export VENV_PROJECT=\$(basename \$PROJECT_DIR)"
+    echo "export VENV_PROJECT=\"$VENV_PROJECT\""
+    echo "source \$HOME/.node-docker-venv/venv_lib/scripts/venv-activate"
+) > $TMP_FILE
+#cat $TMP_FILE # debug
+cat $TMP_FILE > "${PROJECT_DIR}/.envrc"
+rm $TMP_FILE
+
+
 #cd "$PROJECT_DIR"
 #export PWD=$PROJECT_DIR
 #direnv allow
 
+
+exec direnv allow
 

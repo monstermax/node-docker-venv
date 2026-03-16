@@ -70,7 +70,7 @@ bash node-venv-installer.sh
 ```bash
 cd /path/to/your-project
 
-node-venv
+node-venv-init
 ```
 
 

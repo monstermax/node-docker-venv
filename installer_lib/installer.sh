@@ -41,14 +41,13 @@ LINE=$(awk "/^$MARK$/{print NR+1; exit 0}" "$0")
 tail -n +$LINE "$0" | tar -xz -C "$TARGET_DIR"
 
 mkdir -p $HOME/.local/bin
-#cp -a ${TARGET_DIR}/bin/node-venv $HOME/.local/bin
 cd $HOME/.local/bin
-ln -fs ${TARGET_DIR}/bin/node-venv
+ln -fs ${TARGET_DIR}/bin/node-venv-init
 
 
 echo "Node-Docker-Venv installed into: $TARGET_DIR"
 
-echo "Go to your project dir and type « node-venv » to activate the venv"
+echo "Go to your project dir and type « node-venv-init » to activate the venv"
 
 
 exit 0

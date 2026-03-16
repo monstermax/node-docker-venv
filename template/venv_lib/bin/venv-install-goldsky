@@ -22,15 +22,15 @@ fi
 
 cd ${VENV_DIR}
 
-npm install -g @anthropic-ai/claude-code
+npm install -g @goldskycom/cli
 
 mkdir -p ${VENV_DIR}/.envrc.bin
 
-cat <<_EOF > ${VENV_DIR}/.envrc.bin/claude
+cat <<_EOF > ${VENV_DIR}/.envrc.bin/goldsky
 #!/bin/bash
 
 VENV_CONTAINER=${VENV_CONTAINER}
-EXEC_NAME=claude
+EXEC_NAME=goldsky
 
 exec docker exec -ti \
   -w "\$PWD" \
@@ -38,21 +38,5 @@ exec docker exec -ti \
 
 _EOF
 
-chmod +x ${VENV_DIR}/.envrc.bin/claude
-
-
-
-cat <<_EOF > ${VENV_DIR}/.envrc.bin/claude-non-interactive
-#!/bin/bash
-
-VENV_CONTAINER=${VENV_CONTAINER}
-EXEC_NAME=claude
-
-exec docker exec -i \
-  -w "\$PWD" \
-  \${VENV_CONTAINER} \${EXEC_NAME} "\$@"
-
-_EOF
-
-chmod +x ${VENV_DIR}/.envrc.bin/claude-non-interactive
+chmod +x ${VENV_DIR}/.envrc.bin/goldsky
 
