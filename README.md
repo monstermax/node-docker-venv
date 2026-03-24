@@ -1,6 +1,6 @@
 # node-docker-venv
 
-A lightweight tool that gives every Node.js project its own isolated Docker container — the same mental model as Python's `venv`, without touching your system or using version managers like `nvm`.
+A lightweight tool that gives every Node.js project its own isolated Docker container. Inspired by Python's `venv` concept — one environment per project — but goes further: the container only has access to your project directory, nothing else on your filesystem.
 
 Each project gets a dedicated container based on the official Node.js Docker images. Commands like `node`, `npm`, `npx`, `tsc`, `tsx` and `ts-node` transparently run inside it.
 
