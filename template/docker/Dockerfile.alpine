@@ -1,0 +1,20 @@
+# Docker: https://hub.docker.com/_/node
+# Node versions : 20  22  24
+
+ARG BASE_IMAGE=node:22-alpine
+FROM ${BASE_IMAGE}
+
+RUN apk add --no-cache bash
+
+USER node
+
+ENV NPM_CONFIG_PREFIX=/home/node/.local \
+    NPM_CONFIG_CACHE=/home/node/.npm-cache \
+    PATH=/home/node/.local/bin:$PATH
+
+RUN npm install -g typescript ts-node && \
+    npm install -g -D @types/node && \
+    echo 'alias l="ls -l --color=auto"'  >> /home/node/.bashrc && \
+    echo 'alias ll="ls -la --color=auto"' >> /home/node/.bashrc
+
+CMD ["tail", "-f", "/dev/null"]

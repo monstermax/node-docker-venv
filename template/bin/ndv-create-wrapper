@@ -1,0 +1,21 @@
+#!/bin/bash
+set -euo pipefail
+
+if [ $# -ne 1 ]; then
+  echo "Usage: ndv-create-wrapper <executable_name>" >&2
+  echo "  Creates .envrc.bin/<executable_name> as a symlink to the generic wrapper." >&2
+  echo "  The binary will run inside the venv container, just like node, npm, npx, etc." >&2
+  exit 1
+fi
+
+[ -z "${VENV_DIR:-}" ] && echo "Error: VENV_DIR is not set (is the venv active?)" >&2 && exit 1
+
+EXEC_NAME="$1"
+BIN_DIR="${VENV_DIR}/.envrc.bin"
+NDV_DIR="${NDV_DIR:-$HOME/.node-docker-venv}"
+
+mkdir -p "$BIN_DIR"
+
+ln -fs "${NDV_DIR}/bin/wrapper" "${BIN_DIR}/${EXEC_NAME}"
+
+echo "Created wrapper symlink: ${BIN_DIR}/${EXEC_NAME} -> ${NDV_DIR}/bin/wrapper"

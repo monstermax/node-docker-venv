@@ -1,0 +1,11 @@
+#!/bin/sh
+# Stops the venv container.
+
+[ -z "$VENV_CONTAINER" ] && echo "Error: VENV_CONTAINER is not set (is the venv active?)" >&2 && exit 1
+
+if docker container inspect "$VENV_CONTAINER" >/dev/null 2>&1; then
+  docker stop "$VENV_CONTAINER"
+  echo "Container $VENV_CONTAINER stopped."
+else
+  echo "Container $VENV_CONTAINER is not running."
+fi

@@ -1,126 +1,200 @@
+# node-docker-venv
 
-# Node Docker Venv
+A lightweight tool that gives every Node.js project its own isolated Docker container — the same mental model as Python's `venv`, without touching your system or using version managers like `nvm`.
 
-A tiny self-extracting installer that bootstraps a Docker-based “venv-like” environment for Node projects. It drops minimal files in your repo and lets you keep all configuration in `.envrc`. No npm required.
+Each project gets a dedicated container based on the official Node.js Docker images. Commands like `node`, `npm`, `npx`, `tsc`, `tsx` and `ts-node` transparently run inside it.
 
-## What it installs
+---
 
-* `.envrc` (project entrypoint; enable with `direnv allow`)
+## How it works
 
-> The release artifact is a single shell script: `node-venv-installer.sh`. Your build step creates it from the `template/` payload.&#x20;
+1. `install.sh` copies the runtime files into `~/.node-docker-venv/` and symlinks `node-venv-init` into `~/.local/bin/`.
+2. In a project, `node-venv-init` drops a `.envrc` file and calls `direnv allow`.
+3. On every `cd` into the project, `direnv` sources `.envrc`, which starts the Docker container (if not already running) and prepends the venv binaries to `$PATH`.
+4. From that point, `node`, `npm`, `npx`, etc. silently delegate to `docker exec` inside the container.
 
-## How does it work?
-1. The $HOME/.node-docker-venv/venv_lib/bin folder is added to the $PATH
-2. The $HOME/.node-docker-venv/venv_lib/bin folder contains scripts that associate the main Node executables with a Docker container (node, npm, npx, ts-node).
-
-The Docker container is based on the official Node.js Docker images, with the simple addition of "ts-node" for native TypeScript support.
+---
 
 ## Requirements
 
-* Linux/macOS shell with `bash`, `tar`, `gzip`, `curl`
-* Docker (or Podman, if you adapt your own scripts)
-* [direnv](https://direnv.net) (to auto-load `.envrc`)
+- Linux or macOS with `bash`
+- [Docker](https://docs.docker.com/get-docker/)
+- [direnv](https://direnv.net)
 
-
-
-## direnv Install
+### Install direnv
 
 ```bash
-apt install direnv
+# Debian / Ubuntu
+sudo apt install direnv
+
+# macOS
+brew install direnv
 ```
 
-Add this at the end of ~/.bashrc
+Add to your `~/.bashrc` (or `~/.zshrc`):
+
 ```bash
-# direnv autoload
 eval "$(direnv hook bash)"
-
-# update PATH
-PATH=$PATH:$HOME/.local/bin
-
+export PATH="$PATH:$HOME/.local/bin"
 ```
 
+---
 
-## Install from sources (Recommanded)
+## Installation
 
 ```bash
-cd /tmp
-
 git clone https://github.com/monstermax/node-docker-venv
 cd node-docker-venv
-
-# This creates `dist/node-venv-installer.sh` by concatenating the installer stub with a tar.gz payload from the `template/` directory.
-./build_installer.sh
-
-# Then, install it into $HOME/.node-docker-venv
-./dist/node-venv-installer.sh
+./install.sh
 ```
 
-
-
-## Install from dist (Quick but Not recommanded)
+By default, files are installed into `~/.node-docker-venv`.  
+To use a custom path:
 
 ```bash
-wget https://github.com/monstermax/node-docker-venv/raw/refs/heads/master/dist/node-venv-installer.sh
-bash node-venv-installer.sh
+NDV_DIR=~/tools/ndv ./install.sh
 ```
 
+> If you use a custom `NDV_DIR`, make sure to export it in your shell profile so direnv can find it at project activation time.
 
-## Activate a new venv
+---
+
+## Global configuration
+
+Edit `~/.node-docker-venv/config/config` to set your preferred defaults for all new projects:
+
+```bash
+# Set your preferred Node version (used as default by node-venv-init)
+export NDV_DEFAULT_NODE_VERSION="22-bookworm-slim"
+```
+
+---
+
+## Initialise a project
 
 ```bash
 cd /path/to/your-project
-
 node-venv-init
 ```
 
+The script asks for the project name and Node version interactively.  
+Press Enter to accept the defaults.
 
-
-## Notes
-
-* The installer prompts for a **target directory** if not passed as `$1`; it errors out if the directory doesn’t exist (no automatic creation).
-* Designed to be minimal, idempotent, and easy to version alongside your projects.
-
-
-## Usage
-
-Once installed and `direnv` is allowed in the project folder:
-
-* configure everything in `.envrc`,
-* open a new shell in the project directory,
-* use your regular commands (`node`, `npm`, `npx`, etc.)—they’ll run inside the sandbox if your wrappers/runner do so.
-
-
-## Configuration
-
-Put all project-specific settings in `.envrc` (kept in the repo).
-
+**Skip all prompts** (use defaults silently):
+```bash
+node-venv-init -y
 ```
 
+**Also configure resource limits** interactively:
+```bash
+node-venv-init -r
+```
+
+This creates a `.envrc` in the project directory and activates it immediately.  
+Commit `.envrc` to keep the configuration in version control.
+
+---
+
+## Per-project configuration
+
+All settings live in `.envrc`:
+
+```bash
+# Node version
+export VENV_NODE_VERSION="22-alpine"
+
+# Resource limits (default: unlimited)
+#export VENV_MEM_LIMIT=512m
+#export VENV_CPU_LIMIT=2
+#export VENV_PIDS_LIMIT=200
+```
+
+After editing `.envrc`, run `direnv allow` to reload.
+
+> **Any change to `.envrc`** requires rebuilding the container to take effect:
+> ```bash
+> ndv-rebuild
+> ```
+
+---
+
+## Commands
+
+| Command          | Description                                          |
+|------------------|------------------------------------------------------|
+| `node-venv-init` | Initialise a venv in the current project             |
+| `node-venv-init -y` | Same, non-interactive (use defaults)              |
+| `node-venv-init -r` | Also prompt for resource limits                   |
+| `ndv-status`     | Show venv config and container state                 |
+| `ndv-shell`      | Open a bash shell inside the container               |
+| `ndv-shell-root` | Open a bash shell as root inside the container       |
+| `ndv-stop`       | Stop the container                                   |
+| `ndv-rebuild`    | Destroy the image and rebuild from scratch           |
+| `ndv-create-wrapper <exec>` | Create a symlink wrapper in `.envrc.bin/` |
+| `ndv-create-wrapper-interactive <exec>` | Create a standalone interactive wrapper (`-ti`) |
+| `ndv-create-wrapper-non-interactive <exec>` | Create a standalone non-interactive wrapper (`-i`), for editors and CI |
+
+---
+
+## Project-local binaries
+
+You can add project-specific scripts to `.envrc.bin/` at the root of your project.  
+That directory is automatically added to `$PATH` when the venv is active.
+
+---
 
 ## Update
 
-Re-run a newer installer.
+Pull the latest version and re-run the installer:
 
-
-## Uninstall from your project
-
-Remove the `.envrc`. If you committed them, remove from VCS too.
-
-
-## Uninstall globally
-
-Remove the files/folders into `$HOME/.node-docker-venv`
-
-
-
-## Claude code fix
-
+```bash
+cd /path/to/node-docker-venv
+git pull
+./install.sh
 ```
-#!/bin/bash
 
-export VENV_CONTAINER=venv_paradex_bot_01_c1a7
+The installer is idempotent — safe to run multiple times.
 
-$HOME/.node-docker-venv/venv_lib/bin/claude "$@"
+---
 
-# Save this into /tmp/claude
+## Uninstall
+
+**From a project:** remove `.envrc` (and drop it from version control if committed).
+
+**Globally:**
+```bash
+rm -rf ~/.node-docker-venv
+rm ~/.local/bin/node-venv-init
 ```
+
+---
+
+## Adding binaries to the venv
+
+Any binary installed inside the container (via `npm install -g`) can be exposed to your shell using the wrapper commands.
+
+**Simple case** — symlink to the generic wrapper (same as `node`, `npm`, etc.):
+```bash
+ndv-create-wrapper <binary_name>
+```
+
+**Interactive wrapper** — generates a standalone script with `docker exec -ti`, useful when `$VENV_CONTAINER` needs to be hardcoded (e.g. called from an editor):
+```bash
+ndv-create-wrapper-interactive <binary_name>
+```
+
+**Non-interactive wrapper** — same but with `docker exec -i`, for tools that don't allocate a TTY (VSCode extensions, CI pipelines, etc.):
+```bash
+ndv-create-wrapper-non-interactive <binary_name>
+```
+
+The generated wrappers are placed in `.envrc.bin/`, which is automatically added to `$PATH` when the venv is active.
+
+### Example: Claude Code
+
+```bash
+npm install -g @anthropic-ai/claude-code
+ndv-create-wrapper-non-interactive claude
+```
+
+If you use the same project directory across multiple machines, leave `VENV_CONTAINER` dynamic (default). If you need the wrapper to work outside of direnv (e.g. pointed to by a VSCode extension path), uncomment and hardcode `VENV_CONTAINER` inside the generated script.

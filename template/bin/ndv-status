@@ -1,0 +1,32 @@
+#!/bin/sh
+# Shows the current venv configuration and container status.
+
+[ -z "$VENV_CONTAINER" ] && echo "Error: VENV_CONTAINER is not set (is the venv active?)" >&2 && exit 1
+
+echo "┌─ node-docker-venv status ──────────────────────────────"
+echo "│"
+echo "│  Project    : ${VENV_PROJECT:-n/a}"
+echo "│  Directory  : ${VENV_DIR:-n/a}"
+echo "│  Node       : ${VENV_NODE_VERSION:-n/a}"
+echo "│  Container  : ${VENV_CONTAINER}"
+echo "│  Image      : ${VENV_IMAGE:-n/a}"
+echo "│"
+
+# Resource limits
+if [ -n "${VENV_MEM_LIMIT:-}" ] || [ -n "${VENV_CPU_LIMIT:-}" ] || [ -n "${VENV_PIDS_LIMIT:-}" ]; then
+  echo "│  Limits     : mem=${VENV_MEM_LIMIT:-∞}  cpu=${VENV_CPU_LIMIT:-∞}  pids=${VENV_PIDS_LIMIT:-∞}"
+  echo "│"
+fi
+
+# Container state
+if docker container inspect "$VENV_CONTAINER" >/dev/null 2>&1; then
+  STATUS=$(docker inspect --format='{{.State.Status}}' "$VENV_CONTAINER" 2>/dev/null)
+  STARTED=$(docker inspect --format='{{.State.StartedAt}}' "$VENV_CONTAINER" 2>/dev/null)
+  echo "│  Docker     : ✔ UP ($STATUS)"
+  echo "│  Started at : $STARTED"
+else
+  echo "│  Docker     : ✘ DOWN"
+fi
+
+echo "│"
+echo "└────────────────────────────────────────────────────────"

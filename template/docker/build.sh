@@ -1,21 +1,18 @@
 #!/bin/bash
+set -euo pipefail
 
-cd `dirname $0`
+cd "$(dirname "$0")"
 
-if [ "$VENV_CONTAINER" = "" ]; then
-    echo "Error missing VENV_CONTAINER"
-    exit 1
-fi
+[ -z "${VENV_CONTAINER:-}" ] && echo "Error: VENV_CONTAINER is not set" >&2 && exit 1
 
 BASE_IMAGE="node:${VENV_NODE_VERSION}"
 
-# Choose Dockerfile based on VENV_NODE_VERSION
 DOCKERFILE="Dockerfile"
 case "${VENV_NODE_VERSION}" in
   *alpine*) DOCKERFILE="Dockerfile.alpine" ;;
 esac
 
-echo "BUILDING image ${VENV_IMAGE} from base ${BASE_IMAGE} using ${DOCKERFILE}"
+echo "Building image ${VENV_IMAGE} from ${BASE_IMAGE} using ${DOCKERFILE}..."
 
 docker build \
   -f "${DOCKERFILE}" \

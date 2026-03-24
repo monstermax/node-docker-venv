@@ -1,0 +1,8 @@
+#!/bin/sh
+# Opens an interactive bash shell inside the container as the current user.
+
+[ -z "$VENV_CONTAINER" ] && echo "Error: VENV_CONTAINER is not set (is the venv active?)" >&2 && exit 1
+
+exec docker exec -it \
+  -w "$PWD" \
+  "$VENV_CONTAINER" bash "$@"

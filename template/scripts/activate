@@ -1,0 +1,59 @@
+
+# ─── Defaults ─────────────────────────────────────────────────────────────────
+NDV_DIR="${NDV_DIR:-$HOME/.node-docker-venv}"
+NDV_LIB_DIR="$NDV_DIR"
+
+# Load global config (may set NDV_DEFAULT_NODE_VERSION)
+[ -f "$NDV_DIR/config/config" ] && source "$NDV_DIR/config/config"
+
+DEFAULT_NODE_VERSION="${NDV_DEFAULT_NODE_VERSION:-22-alpine}"
+
+
+# ─── Guards ───────────────────────────────────────────────────────────────────
+_ndv_die() { echo "[node-docker-venv] Error: $1" >&2; return 1; }
+
+[ -z "${NDV_LIB_DIR:-}" ]  && _ndv_die "NDV_LIB_DIR is not set"
+[ ! -d "$NDV_LIB_DIR" ]    && _ndv_die "NDV_LIB_DIR does not exist: $NDV_LIB_DIR"
+[ -z "${VENV_DIR:-}" ]     && _ndv_die "VENV_DIR is not set"
+[ ! -d "$VENV_DIR" ]       && _ndv_die "VENV_DIR does not exist: $VENV_DIR"
+
+
+# ─── Exports ──────────────────────────────────────────────────────────────────
+_HASH=$(echo "$VENV_DIR" | sha1sum | cut -c1-4)
+
+export VENV_DIR
+export NDV_LIB_DIR
+
+export VENV_PROJECT="${VENV_PROJECT:-$(basename "$VENV_DIR")}"
+export VENV_CONTAINER="venv_${VENV_PROJECT}_${_HASH}"
+export VENV_NODE_VERSION="${VENV_NODE_VERSION:-$DEFAULT_NODE_VERSION}"
+export VENV_IMAGE="${VENV_CONTAINER}:${VENV_NODE_VERSION}"
+
+
+# ─── Docker helpers ───────────────────────────────────────────────────────────
+_ndv_has_docker() {
+  command -v docker >/dev/null 2>&1 && docker info >/dev/null 2>&1
+}
+
+_ndv_container_up() {
+  docker container inspect "${VENV_CONTAINER}" >/dev/null 2>&1
+}
+
+
+# ─── Start container if needed ────────────────────────────────────────────────
+if _ndv_has_docker; then
+  if ! _ndv_container_up; then
+    "$NDV_LIB_DIR/docker/run.sh"
+    echo "[node-docker-venv] Container $VENV_CONTAINER started"
+  else
+    echo "[node-docker-venv] Container $VENV_CONTAINER already up"
+  fi
+else
+  echo "[node-docker-venv] Warning: Docker not found — container not started" >&2
+fi
+
+
+# ─── PATH ─────────────────────────────────────────────────────────────────────
+export PATH="${NDV_LIB_DIR}/bin:$PATH:${VENV_DIR}/.envrc.bin"
+
+echo "[node-docker-venv] Venv '${VENV_PROJECT}' loaded — edit .envrc to configure"

@@ -1,0 +1,12 @@
+# node-docker-venv global configuration
+# This file is sourced on every venv activation.
+# Edit to set your preferred defaults for all new projects.
+
+# Default Node version for new projects
+# Format: "<version>-<distrib>"
+# Versions : 20  22  24
+# Debian   : bullseye  bookworm  trixie  (+ -slim variants)
+# Alpine   : alpine
+#
+#export NDV_DEFAULT_NODE_VERSION="22-alpine"
+#export NDV_DEFAULT_NODE_VERSION="22-bookworm-slim"

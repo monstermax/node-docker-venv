@@ -1,0 +1,12 @@
+#!/bin/sh
+# Generic wrapper: delegates the call to the same-named binary inside the container.
+# Symlink node, npm, npx, tsc, ts-node, tsx to this script.
+
+EXEC_NAME=$(basename "$0")
+
+[ -z "$EXEC_NAME" ]      && echo "Error: could not determine exec name" >&2 && exit 1
+[ -z "$VENV_CONTAINER" ] && echo "Error: VENV_CONTAINER is not set (is the venv active?)" >&2 && exit 1
+
+exec docker exec -it \
+  -w "$PWD" \
+  "$VENV_CONTAINER" "$EXEC_NAME" "$@"

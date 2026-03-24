@@ -1,0 +1,21 @@
+#!/bin/sh
+# Destroys the container and its image, then rebuilds and restarts from scratch.
+
+NDV_DIR="${NDV_DIR:-$HOME/.node-docker-venv}"
+
+[ -z "$VENV_CONTAINER" ] && echo "Error: VENV_CONTAINER is not set (is the venv active?)" >&2 && exit 1
+[ -z "$VENV_IMAGE" ]     && echo "Error: VENV_IMAGE is not set (is the venv active?)" >&2 && exit 1
+
+echo "Stopping container $VENV_CONTAINER..."
+docker stop "$VENV_CONTAINER" 2>/dev/null || true
+
+echo "Removing container $VENV_CONTAINER..."
+docker rm -f "$VENV_CONTAINER" 2>/dev/null || true
+
+echo "Removing image $VENV_IMAGE..."
+docker rmi "$VENV_IMAGE" 2>/dev/null || true
+
+echo "Rebuilding..."
+"$NDV_DIR/docker/run.sh"
+
+echo "Container $VENV_CONTAINER rebuilt and started."
